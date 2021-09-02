@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Basic template that defines a single Amazon EC2 instance tied to an existing security group.
+
+Parameters:
+  VpcId: 
+    Description: VPC id 
+    Type: String
+    Default: vpc-01adb3d08c7751eae
+
+  SubnetId1:
+    Description: Subnet Id where instance will create 
+    Type: String
+    Default: subnet-0a5428b0215c25db5
+
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  
+  InstanceType:
+    Description: Spring Boot Demo Rest
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.micro]
+    ConstraintDescription: must be a valid EC2 instance type.
+
+Resources:
+  S3InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - ec2-read-write
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      SecurityGroupIds: 
+        - sg-093e5b865f4d42e1e
+      KeyName: !Ref KeyName
+      ImageId: ami-0d5eff06f840b45e9
+      SubnetId: !Ref SubnetId1
+      IamInstanceProfile: !Ref S3InstanceProfile
+      UserData:
+        Fn::Base64: !Sub
+        - |
+          #!/bin/bash
+          # writes output for user data execution to a viewable log file
+          exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
+          # update yum
+          sudo yum update -y
+          # install java
+          sudo amazon-linux-extras install java-openjdk11
+
+          # get the spring boot app from s3
+          aws s3 cp s3://123-cfb-files/db-demo.jar db-demo.jar
+
+          #start the app
+          java -jar db-demo.jar &
+        - {
+          }    
+
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !Ref 'EC2Instance'
+  AZ:
+    Description: Availability Zone of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, AvailabilityZone]
+  PublicDNS:
+    Description: Public DNSName of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, PublicDnsName]
+  PublicIP:
+    Description: Public IP address of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, PublicIp]

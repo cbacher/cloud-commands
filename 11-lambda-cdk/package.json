@@ -1,0 +1,30 @@
+{
+  "name": "11-lambda-cdk",
+  "version": "0.1.0",
+  "bin": {
+    "11-lambda-cdk": "bin/lambda.js"
+  },
+  "scripts": {
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "1.108.1",
+    "aws-cdk": "1.108.1",
+    "jest": "^26.4.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "^1.111.0",
+    "@aws-cdk/aws-codebuild": "^1.111.0",
+    "@aws-cdk/aws-codecommit": "^1.111.0",
+    "@aws-cdk/aws-codedeploy": "^1.111.0",
+    "@aws-cdk/aws-codepipeline": "^1.111.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.111.0",
+    "@aws-cdk/aws-lambda": "^1.111.0",
+    "@aws-cdk/aws-sns": "^1.111.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.111.0",
+    "@aws-cdk/core": "1.108.1",
+    "aws-sdk": "^2.940.0"
+  }
+}
